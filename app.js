@@ -8,8 +8,8 @@ const TIER_WEIGHT = { 1: 100, 2: 400, 3: 900, 4: 1000, 5: 1000, 6: 1000, 7: 1000
 const LEVELS = [
   { max: 1.0,      pct: "≤100%",   label: "ปกติ" },
   { max: 1.25,     pct: "101-125%", label: "ช้าลงเล็กน้อย" },
-  { max: 1.5,      pct: "126-150%", label: "ช้าลงมาก" },
-  { max: Infinity, pct: ">150%",    label: "แทบเคลื่อนที่ไม่ได้" },
+  { max: 1.5,      pct: "126-150%", label: "ช้าลงปานกลาง" },
+  { max: Infinity, pct: ">150%",    label: "ช้าลงมากที่สุด" },
 ];
 const KEY = "ship-weight-v1"; // ข้อมูลที่กรอกจะถูกเก็บใน localStorage ของเบราว์เซอร์ด้วยคีย์นี้
 const fmt = (n) => Number(n).toLocaleString("en-US");
