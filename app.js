@@ -1,5 +1,7 @@
 // ---------- ตั้งค่า ----------
 const ROWS = 4;
+const MAX_QTY = 10;  // ลิมิตนำขึ้นเรือ (ชิ้น)
+const MAX_RATE = 3;  // ลิมิตจำนวนแลกเปลี่ยน
 // น้ำหนักต่อชิ้นตาม Tier (Tier 4-7 = 1,000 LT)
 const TIER_WEIGHT = { 1: 100, 2: 400, 3: 900, 4: 1000, 5: 1000, 6: 1000, 7: 1000 };
 // เกณฑ์สถานะ: max = สัดส่วนสูงสุดของน้ำหนักเรือ (100% = น้ำหนักเรือปัจจุบัน)
@@ -27,6 +29,10 @@ let state;
 try { state = JSON.parse(localStorage.getItem(KEY)) || structuredClone(DEFAULT); }
 catch { state = structuredClone(DEFAULT); }
 if (!state.rows || state.rows.length !== ROWS) state = structuredClone(DEFAULT);
+state.rows.forEach((r) => { // ปรับค่าที่เคยบันทึกไว้ให้อยู่ในลิมิต
+  r.qty = Math.min(Math.max(Number(r.qty) || 1, 1), MAX_QTY);
+  r.got = Math.min(Math.max(Number(r.got) || 1, 1), MAX_RATE);
+});
 state.crew = Number(state.crew) || 0; // รองรับข้อมูลเก่าที่ยังไม่มีน้ำหนักลูกเรือ
 
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {} };
@@ -43,10 +49,10 @@ state.rows.forEach((r, i) => {
   tr.innerHTML = `
     <td class="c-use"><input type="checkbox" data-f="on" aria-label="ใช้งานแถว ${i + 1}" ${r.on ? "checked" : ""}></td>
     <td class="c-tier"><select data-f="tier" aria-label="Tier">${options(1, 7, r.tier)}</select></td>
-    <td class="c-qty"><select data-f="qty" aria-label="นำขึ้นเรือ">${options(1, 30, r.qty)}</select></td>
+    <td class="c-qty"><select data-f="qty" aria-label="นำขึ้นเรือ">${options(1, MAX_QTY, r.qty)}</select></td>
     <td class="c-unit num" data-o="unit"></td>
     <td class="c-before num" data-o="before"></td>
-    <td class="c-out"><select data-f="got" aria-label="จำนวนแลกเปลี่ยน">${options(1, 10, r.got)}</select></td>
+    <td class="c-out"><select data-f="got" aria-label="จำนวนแลกเปลี่ยน">${options(1, MAX_RATE, r.got)}</select></td>
     <td class="c-after num" data-o="after"></td>
     <td class="c-recv num" data-o="recv"></td>`;
   tbody.appendChild(tr);
@@ -71,7 +77,9 @@ function update() {
     const before = r.on ? unit * r.qty : 0;   // =IF(ใช้งาน, น้ำหนักต่อชิ้น × จำนวน, 0)
     // อัตราแลกเปลี่ยน 1 : n  → นำขึ้นเรือ 10 ชิ้น, อัตรา 3 = ได้รับกลับมา 30 ชิ้น
     const recv = r.on ? r.qty * r.got : 0;
-    const after = recv * unit;                 // น้ำหนักหลังเทรด = จำนวนที่ได้รับ × น้ำหนักต่อชิ้น
+    // ของที่ได้รับกลับมาเป็น Tier ถัดไป (Tier + 1) เช่น Tier 2 → Tier 3 (900 LT)
+    const unitOut = TIER_WEIGHT[r.tier + 1] ?? TIER_WEIGHT[7];
+    const after = recv * unitOut;              // น้ำหนักหลังเทรด = จำนวนที่ได้รับ × น้ำหนักต่อชิ้นของ Tier ถัดไป
     sumBefore += before; sumAfter += after; sumRecv += recv;
     const tr = tbody.children[i];
     tr.classList.toggle("off", !r.on);
