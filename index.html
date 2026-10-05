@@ -20,12 +20,12 @@
           <thead>
             <tr>
               <th>ใช้งาน</th><th>Tier (ที่เอาไปเทรด)</th><th>นำขึ้นเรือ (ชิ้น)</th>
-              <th>น้ำหนัก(ชิ้น)</th><th>น้ำหนัก (ก่อนเทรด)</th><th>จำนวนที่ได้ (ชิ้น)</th><th>น้ำหนัก (หลังเทรด)</th>
+              <th>น้ำหนัก(ชิ้น)</th><th>น้ำหนัก (ก่อนเทรด)</th><th>จำนวนแลกเปลี่ยน</th><th>น้ำหนัก (หลังเทรด)</th><th>จำนวนที่ได้รับ (ชิ้น)</th>
             </tr>
           </thead>
           <tbody id="rows"></tbody>
           <tfoot>
-            <tr><th>รวม</th><td colspan="3"></td><td id="sumBefore" class="num total">0</td><td></td><td id="sumAfter" class="num total">0</td></tr>
+            <tr><th>รวม</th><td colspan="3"></td><td id="sumBefore" class="num total">0</td><td></td><td id="sumAfter" class="num total">0</td><td id="sumRecv" class="num total">0</td></tr>
           </tfoot>
         </table>
       </div>
@@ -35,7 +35,6 @@
         <input id="capacity" type="number" min="1" step="100" value="17900" inputmode="numeric">
         <label for="crew">น้ำหนักลูกเรือ :</label>
         <input id="crew" type="number" min="0" step="1" value="0" inputmode="numeric">
-        <span class="total-load">น้ำหนักรวม : <strong id="totalLoad">0</strong> LT</span>
       </div>
 
       <div class="status">

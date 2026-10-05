@@ -46,8 +46,9 @@ state.rows.forEach((r, i) => {
     <td class="c-qty"><select data-f="qty" aria-label="นำขึ้นเรือ">${options(1, 30, r.qty)}</select></td>
     <td class="c-unit num" data-o="unit"></td>
     <td class="c-before num" data-o="before"></td>
-    <td class="c-out"><select data-f="got" aria-label="จำนวนที่ได้">${options(1, 10, r.got)}</select></td>
-    <td class="c-after num" data-o="after"></td>`;
+    <td class="c-out"><select data-f="got" aria-label="จำนวนแลกเปลี่ยน">${options(1, 10, r.got)}</select></td>
+    <td class="c-after num" data-o="after"></td>
+    <td class="c-recv num" data-o="recv"></td>`;
   tbody.appendChild(tr);
 });
 
@@ -64,24 +65,29 @@ $("crew").value = state.crew;
 
 // ---------- คำนวณ ----------
 function update() {
-  let sumBefore = 0, sumAfter = 0;
+  let sumBefore = 0, sumAfter = 0, sumRecv = 0;
   state.rows.forEach((r, i) => {
     const unit = TIER_WEIGHT[r.tier] ?? 0;
     const before = r.on ? unit * r.qty : 0;   // =IF(ใช้งาน, น้ำหนักต่อชิ้น × จำนวน, 0)
-    const after = before * r.got;              // น้ำหนักก่อนเทรด × จำนวนที่ได้
-    sumBefore += before; sumAfter += after;
+    // อัตราแลกเปลี่ยน 1 : n  → นำขึ้นเรือ 10 ชิ้น, อัตรา 3 = ได้รับกลับมา 30 ชิ้น
+    const recv = r.on ? r.qty * r.got : 0;
+    const after = recv * unit;                 // น้ำหนักหลังเทรด = จำนวนที่ได้รับ × น้ำหนักต่อชิ้น
+    sumBefore += before; sumAfter += after; sumRecv += recv;
     const tr = tbody.children[i];
     tr.classList.toggle("off", !r.on);
     tr.querySelector('[data-o="unit"]').textContent = `${fmt(unit)} LT`;
     tr.querySelector('[data-o="before"]').textContent = fmt(before);
     tr.querySelector('[data-o="after"]').textContent = fmt(after);
+    tr.querySelector('[data-o="recv"]').textContent = fmt(recv);
   });
+  // ยอดรวม = ผลรวมทุกแถว + น้ำหนักลูกเรือ (เหมือน E13 และ G13 ในชีต)
+  sumBefore += state.crew; sumAfter += state.crew;
   $("sumBefore").textContent = fmt(sumBefore);
   $("sumAfter").textContent = fmt(sumAfter);
+  $("sumRecv").textContent = fmt(sumRecv);
 
   const cap = state.capacity > 0 ? state.capacity : 0;
-  const load = sumAfter + state.crew;       // น้ำหนักบรรทุกหลังเทรด + น้ำหนักลูกเรือ
-  $("totalLoad").textContent = fmt(load);
+  const load = sumAfter;                     // รวมน้ำหนักลูกเรือแล้ว
   const ratio = cap ? load / cap : 0;
   const excess = load - cap;
   const over = cap > 0 && excess > 0;
