@@ -24,7 +24,8 @@ select,input[type=number]{font:inherit;font-weight:500;text-align:center;border:
 select{cursor:pointer}
 select:focus-visible,input:focus-visible{outline:2px solid #1a56db;outline-offset:1px;background:#ffffff80}
 tr.off .num{color:#999}
-.capacity{display:flex;align-items:center;gap:12px;margin:16px 0}
+.capacity{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0}
+.total-load{margin-left:auto;font-size:14px}.total-load strong{font-size:18px}
 .capacity label{font-weight:500}
 .capacity input{width:140px;background:var(--grey);font-size:18px;font-weight:600;padding:8px}
 .status{display:grid;grid-template-columns:auto 1fr 120px;gap:0;border:3px solid var(--frame);background:#fff}

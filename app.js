@@ -9,12 +9,13 @@ const LEVELS = [
   { max: 1.5,      pct: "126-150%", label: "ช้าลงมาก" },
   { max: Infinity, pct: ">150%",    label: "แทบเคลื่อนที่ไม่ได้" },
 ];
-const KEY = "ship-weight-v1";
+const KEY = "ship-weight-v1"; // ข้อมูลที่กรอกจะถูกเก็บใน localStorage ของเบราว์เซอร์ด้วยคีย์นี้
 const fmt = (n) => Number(n).toLocaleString("en-US");
 
 // ---------- สถานะเริ่มต้น ----------
 const DEFAULT = {
   capacity: 17900,
+  crew: 0,
   rows: [
     { on: false, tier: 3, qty: 10, got: 3 },
     { on: false, tier: 4, qty: 4,  got: 1 },
@@ -26,6 +27,7 @@ let state;
 try { state = JSON.parse(localStorage.getItem(KEY)) || structuredClone(DEFAULT); }
 catch { state = structuredClone(DEFAULT); }
 if (!state.rows || state.rows.length !== ROWS) state = structuredClone(DEFAULT);
+state.crew = Number(state.crew) || 0; // รองรับข้อมูลเก่าที่ยังไม่มีน้ำหนักลูกเรือ
 
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {} };
 const $ = (id) => document.getElementById(id);
@@ -58,6 +60,7 @@ LEVELS.forEach((l, i) => {
 });
 
 $("capacity").value = state.capacity;
+$("crew").value = state.crew;
 
 // ---------- คำนวณ ----------
 function update() {
@@ -77,8 +80,10 @@ function update() {
   $("sumAfter").textContent = fmt(sumAfter);
 
   const cap = state.capacity > 0 ? state.capacity : 0;
-  const ratio = cap ? sumAfter / cap : 0;
-  const excess = sumAfter - cap;
+  const load = sumAfter + state.crew;       // น้ำหนักบรรทุกหลังเทรด + น้ำหนักลูกเรือ
+  $("totalLoad").textContent = fmt(load);
+  const ratio = cap ? load / cap : 0;
+  const excess = load - cap;
   const over = cap > 0 && excess > 0;
   const idx = LEVELS.findIndex((l) => ratio <= l.max);
 
@@ -115,5 +120,10 @@ $("capacity").addEventListener("input", (e) => {
   state.capacity = Math.max(0, Number(e.target.value) || 0);
   save(); update();
 });
+$("crew").addEventListener("input", (e) => {
+  state.crew = Math.max(0, Number(e.target.value) || 0);
+  save(); update();
+});
+window.addEventListener("pagehide", save);
 
 update();
