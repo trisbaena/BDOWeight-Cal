@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>คำนวณน้ำหนักบรรทุกเรือ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>คำนวณน้ำหนักบรรทุกเรือ</h1>
+
+  <div class="layout">
+    <section class="left">
+      <div class="scroll">
+        <table id="cargo">
+          <thead>
+            <tr>
+              <th>ใช้งาน</th><th>Tier (ที่เอาไปเทรด)</th><th>นำขึ้นเรือ (ชิ้น)</th>
+              <th>น้ำหนัก(ชิ้น)</th><th>น้ำหนัก (ก่อนเทรด)</th><th>จำนวนที่ได้ (ชิ้น)</th><th>น้ำหนัก (หลังเทรด)</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+          <tfoot>
+            <tr><th>รวม</th><td colspan="3"></td><td id="sumBefore" class="num total">0</td><td></td><td id="sumAfter" class="num total">0</td></tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="capacity">
+        <label for="capacity">น้ำหนักเรือปัจจุบัน :</label>
+        <input id="capacity" type="number" min="1" step="100" value="17900" inputmode="numeric">
+      </div>
+
+      <div class="status">
+        <div class="status-label">สถานะน้ำหนัก</div>
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="สัดส่วนน้ำหนักต่อความจุเรือ">
+          <div id="fill" class="fill"></div>
+        </div>
+        <div id="pct" class="pct">0%</div>
+      </div>
+      <p id="message" class="message ok"></p>
+    </section>
+
+    <aside class="right">
+      <table id="levels">
+        <thead><tr><th>น้ำหนักที่บรรทุก</th><th>เปอร์เซ็นต์</th><th>สถานะ</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="hint">น้ำหนักที่บรรทุกคำนวณจากน้ำหนักเรือปัจจุบัน (100%)</p>
+    </aside>
+  </div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
